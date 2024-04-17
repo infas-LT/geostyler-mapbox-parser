@@ -1334,6 +1334,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
   getPaintFromFillSymbolizer(symbolizer: FillSymbolizer): FillPaint {
     const {
       opacity,
+      fillOpacity,
       color,
       outlineColor,
       graphicFill,
@@ -1342,8 +1343,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
 
     const paint: FillPaint = {
       'fill-antialias': gs2mbExpression<boolean>(antialias),
-      'fill-opacity': gs2mbExpression<number>(opacity),
-      //TODO: Fix opacity
+      'fill-opacity': gs2mbExpression<number>(opacity === undefined ? fillOpacity : opacity),
       'fill-color': gs2mbExpression<string>(color),
       'fill-outline-color': gs2mbExpression<string>(outlineColor),
       'fill-pattern': this.getPatternOrGradientFromPointSymbolizer(graphicFill)
