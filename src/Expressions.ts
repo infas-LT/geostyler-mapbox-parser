@@ -1,4 +1,5 @@
 import {
+  DistanceUnit,
   Expression,
   Fcase,
   Expression as GeoStylerExpression,
@@ -6,7 +7,7 @@ import {
   PropertyType,
   isGeoStylerFunction
 } from 'geostyler-style';
-import { invert } from 'lodash';
+import { invert, isNumber } from 'lodash';
 import {
   ExpressionName,
   Expression as MapboxExpression,
@@ -281,4 +282,20 @@ export function mb2gsExpression<T extends PropertyType>(mbExpression?: MbInput):
   }
 
   return func as GeoStylerExpression<T>;
+}
+
+export function toMapboxUnit<T extends PropertyType>(expr: GeoStylerExpression<T>, d: DistanceUnit | undefined): GeoStylerExpression<T> {
+
+  if (!d || isGeoStylerFunction(expr) || d!="m") {
+    return expr;
+  }
+
+  // MetersOnEarth -> CSS-Pixel...
+  // TODO: Umsetzen in Zoom-Steps oder Function
+
+  let k: T = expr as T;
+  if (isNumber(k))
+    k = (k / 1000.0) as T;
+
+  return k as GeoStylerExpression<T>;
 }

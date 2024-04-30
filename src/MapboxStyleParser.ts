@@ -28,7 +28,8 @@ import {
   isFilter,
   isScaleDenominator,
   isGeoStylerBooleanFunction,
-  isGeoStylerStringFunction
+  isGeoStylerStringFunction,
+  DistanceUnit
 } from 'geostyler-style';
 
 import MapboxStyleUtil from './Util/MapboxStyleUtil';
@@ -52,7 +53,7 @@ import {
   Expression,
   Layer
 } from 'mapbox-gl';
-import { gs2mbExpression, mb2gsExpression } from './Expressions';
+import { gs2mbExpression, mb2gsExpression, toMapboxUnit } from './Expressions';
 import { isBoolean, isString, isUndefined, omitBy, set } from 'lodash';
 
 /**
@@ -1438,6 +1439,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
       color,
       perpendicularOffset,
       width,
+      widthUnit,
       blur,
       dasharray,
       graphicFill,
@@ -1448,7 +1450,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
     const paint: LinePaint = {
       'line-opacity': gs2mbExpression<number>(opacity),
       'line-color': color as LinePaint['line-color'],
-      'line-width': gs2mbExpression<number>(width),
+      'line-width': gs2mbExpression<number>(toMapboxUnit(width, widthUnit)),
       'line-gap-width': gs2mbExpression<number>(gapWidth),
       'line-offset': gs2mbExpression<number>(perpendicularOffset),
       'line-blur': gs2mbExpression<number>(blur),
@@ -1616,7 +1618,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
       pitchAlignment,
       rotate,
       rotationAlignment,
-      size,
+      size,      
       transform,
       avoidEdges,
       placement,
@@ -1632,7 +1634,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
       'text-field': this.getTextFieldFromLabel(label),
       // TODO: handle array values
       'text-font': font as SymbolLayout['text-font'],
-      'text-size': gs2mbExpression<number>(size),
+      'text-size': gs2mbExpression<number>(toMapboxUnit(size,(symbolizer as any)["sizeUnit"] as DistanceUnit | undefined)),
       'text-max-width': gs2mbExpression<number>(maxWidth),
       'text-line-height': gs2mbExpression<number>(lineHeight),
       'text-letter-spacing': gs2mbExpression<number>(letterSpacing),
@@ -1774,6 +1776,9 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
     return undefined;
   }
 
+  
 }
+
+
 
 export default MapboxStyleParser;
