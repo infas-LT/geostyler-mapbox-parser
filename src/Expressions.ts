@@ -7,7 +7,7 @@ import {
   PropertyType,
   isGeoStylerFunction
 } from 'geostyler-style';
-import { invert, isNumber } from 'lodash';
+import { invert } from 'lodash';
 import {
   ExpressionName,
   Expression as MapboxExpression,
@@ -284,7 +284,9 @@ export function mb2gsExpression<T extends PropertyType>(mbExpression?: MbInput):
   return func as GeoStylerExpression<T>;
 }
 
-export function toMapboxUnit(mbExpression: MbInput, d: DistanceUnit | undefined): MbInput {
+type MbNumberExpression = MapboxExpression | number | undefined;
+
+export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit | undefined): MbNumberExpression {
 
   let k: number;
 
@@ -296,9 +298,9 @@ export function toMapboxUnit(mbExpression: MbInput, d: DistanceUnit | undefined)
     //return mbExpression as GeoStylerExpression<T> | undefined;
   }
   else {
-    if (mbExpression.length==1)
-      k = mbExpression[0];
-    else
+    //if (mbExpression.length==1)
+    //  k = mbExpression[0];
+    //else
       return mbExpression;
   }
 
@@ -311,31 +313,3 @@ export function toMapboxUnit(mbExpression: MbInput, d: DistanceUnit | undefined)
 
   return k;
 }
-
-/*export function toMapboxUnit<T extends PropertyType>(mbExpression: MbInput, d: DistanceUnit | undefined): MbInput {
-
-  let k: T;
-
-  if (!mbExpression)
-    return mbExpression;
-
-  if (!(Array.isArray(mbExpression) )) {
-    k = <T>mbExpression;    
-    //return mbExpression as GeoStylerExpression<T> | undefined;
-  }
-  else {
-    if (mbExpression.length==1)
-      k = mbExpression[0];
-    else
-      return mbExpression;
-  }
-
-  // MetersOnEarth -> CSS-Pixel...
-  // TODO: Umsetzen in Zoom-Steps oder Function
-
-  //let k: T = expr as T;
-  if (isNumber(k))
-    k = (k / 1000.0) as T;
-
-  return k as GeoStylerExpression<T>;
-}*/
