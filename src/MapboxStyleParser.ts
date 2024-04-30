@@ -1450,7 +1450,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
     const paint: LinePaint = {
       'line-opacity': gs2mbExpression<number>(opacity),
       'line-color': color as LinePaint['line-color'],
-      'line-width': gs2mbExpression<number>(toMapboxUnit(width, widthUnit)),
+      'line-width': toMapboxUnit(gs2mbExpression<number>(width), widthUnit),
       'line-gap-width': gs2mbExpression<number>(gapWidth),
       'line-offset': gs2mbExpression<number>(perpendicularOffset),
       'line-blur': gs2mbExpression<number>(blur),
@@ -1634,7 +1634,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
       'text-field': this.getTextFieldFromLabel(label),
       // TODO: handle array values
       'text-font': font as SymbolLayout['text-font'],
-      'text-size': gs2mbExpression<number>(toMapboxUnit(size,(symbolizer as any)["sizeUnit"] as DistanceUnit | undefined)),
+      'text-size': toMapboxUnit(gs2mbExpression<number>(size),(symbolizer as any)["sizeUnit"] as DistanceUnit | undefined),
       'text-max-width': gs2mbExpression<number>(maxWidth),
       'text-line-height': gs2mbExpression<number>(lineHeight),
       'text-letter-spacing': gs2mbExpression<number>(letterSpacing),

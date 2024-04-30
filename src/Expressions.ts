@@ -284,18 +284,58 @@ export function mb2gsExpression<T extends PropertyType>(mbExpression?: MbInput):
   return func as GeoStylerExpression<T>;
 }
 
-export function toMapboxUnit<T extends PropertyType>(expr: GeoStylerExpression<T>, d: DistanceUnit | undefined): GeoStylerExpression<T> {
+export function toMapboxUnit(mbExpression: MbInput, d: DistanceUnit | undefined): MbInput {
 
-  if (!d || isGeoStylerFunction(expr) || d!="m") {
-    return expr;
+  let k: number;
+
+  if (!mbExpression)
+    return mbExpression;
+
+  if (!(Array.isArray(mbExpression) )) {
+    k = <number>mbExpression;    
+    //return mbExpression as GeoStylerExpression<T> | undefined;
+  }
+  else {
+    if (mbExpression.length==1)
+      k = mbExpression[0];
+    else
+      return mbExpression;
   }
 
   // MetersOnEarth -> CSS-Pixel...
   // TODO: Umsetzen in Zoom-Steps oder Function
 
-  let k: T = expr as T;
+  //let k: T = expr as T;
+
+  k = (k / 1000.0);
+
+  return k;
+}
+
+/*export function toMapboxUnit<T extends PropertyType>(mbExpression: MbInput, d: DistanceUnit | undefined): MbInput {
+
+  let k: T;
+
+  if (!mbExpression)
+    return mbExpression;
+
+  if (!(Array.isArray(mbExpression) )) {
+    k = <T>mbExpression;    
+    //return mbExpression as GeoStylerExpression<T> | undefined;
+  }
+  else {
+    if (mbExpression.length==1)
+      k = mbExpression[0];
+    else
+      return mbExpression;
+  }
+
+  // MetersOnEarth -> CSS-Pixel...
+  // TODO: Umsetzen in Zoom-Steps oder Function
+
+  //let k: T = expr as T;
   if (isNumber(k))
     k = (k / 1000.0) as T;
 
   return k as GeoStylerExpression<T>;
-}
+}*/
