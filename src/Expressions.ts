@@ -292,14 +292,6 @@ function toCssPixel(metersOnEarth: number, scaleDenominator: number) : number {
   return Math.max(1.0, Math.round(metersOnEarth / scaleDenominator * cssPixPerMeter));    
 }
 
-function toCssPixel(metersOnEarth: number, scaleDenominator: number) : number {
-  const cssPixPerMeter : number = 3780.0;
-  if (metersOnEarth<0.0)
-    return 0.0;
-
-  return Math.max(1.0, Math.round(metersOnEarth / scaleDenominator * cssPixPerMeter));    
-}
-
 type MbNumberExpression = MapboxExpression | number | undefined;
 
 export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit | undefined): MbNumberExpression {
@@ -319,7 +311,7 @@ export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit |
     //else
       return mbExpression;
   }
-  
+
   let scaleDenom = 250000000.0; // Scale for Zoomlevel 1: 1:250 Mio.
   
   let interpolation : MbNumberExpression = ["interpolate",["linear"],["zoom"]];
