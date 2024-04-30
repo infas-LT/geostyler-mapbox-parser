@@ -284,6 +284,14 @@ export function mb2gsExpression<T extends PropertyType>(mbExpression?: MbInput):
   return func as GeoStylerExpression<T>;
 }
 
+function toCssPixel(metersOnEarth: number, scaleDenominator: number) : number {
+  const cssPixPerMeter : number = 3780.0;
+  if (metersOnEarth<0.0)
+    return 0.0;
+
+  return Math.max(1.0, Math.round(metersOnEarth / scaleDenominator * cssPixPerMeter));    
+}
+
 type MbNumberExpression = MapboxExpression | number | undefined;
 
 export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit | undefined): MbNumberExpression {
@@ -304,12 +312,22 @@ export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit |
       return mbExpression;
   }
 
+  // https://mathias-groebe.de/der-massstab-von-webkarten-die-zoomstufen/
+  let z1 = toCssPixel(k,500000000.0);
+  let z5 = toCssPixel(k,15000000.0);
+  let z10 = toCssPixel(k,15000000.0);
+  let z17 = toCssPixel(k,4000.0);
+  let z19 = toCssPixel(k,1000.0);
+
+  // Zwischenstand: 3 Stützpunkte
+  let interpolation : MbNumberExpression = ["step",["zoom"], 1, z1, 5, z5, 10, z10, 17, z17, 19, z19];
+
   // MetersOnEarth -> CSS-Pixel...
   // TODO: Umsetzen in Zoom-Steps oder Function
 
   //let k: T = expr as T;
 
-  k = (k / 1000.0);
+  //k = (k / 1000.0);
 
-  return k;
+  return interpolation;
 }
