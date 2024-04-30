@@ -298,7 +298,7 @@ export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit |
 
   let k: number;
 
-  if (!mbExpression)
+  if (!mbExpression || !d || d!="m")
     return mbExpression;
 
   if (!(Array.isArray(mbExpression) )) {
@@ -312,22 +312,20 @@ export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit |
       return mbExpression;
   }
 
-  // https://mathias-groebe.de/der-massstab-von-webkarten-die-zoomstufen/
-  let z1 = toCssPixel(k,500000000.0);
-  let z5 = toCssPixel(k,15000000.0);
-  let z10 = toCssPixel(k,15000000.0);
-  let z17 = toCssPixel(k,4000.0);
-  let z19 = toCssPixel(k,1000.0);
-
-  // Zwischenstand: 3 Stützpunkte
-  let interpolation : MbNumberExpression = ["step",["zoom"], 1, z1, 5, z5, 10, z10, 17, z17, 19, z19];
-
-  // MetersOnEarth -> CSS-Pixel...
-  // TODO: Umsetzen in Zoom-Steps oder Function
-
-  //let k: T = expr as T;
-
-  //k = (k / 1000.0);
+  let scaleDenom = 250000000.0; // Scale for Zoomlevel 1: 1:250 Mio.
+  
+  let interpolation : MbNumberExpression = ["interpolate",["linear"],["zoom"]];
+  for(let z:number = 1; z<21; z++) {
+    // MetersOnEarth -> CSS-Pixel...
+    let widthAtZoom = toCssPixel(k,scaleDenom);
+    scaleDenom/=2.0;
+   
+    if (z%3==1)
+      {
+        interpolation.push(z);
+        interpolation.push(widthAtZoom);
+      }
+  }
 
   return interpolation;
 }
