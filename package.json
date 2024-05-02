@@ -1,6 +1,6 @@
 {
   "name": "geostyler-mapbox-parser-infas",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "GeoStyler-Style-Parser implementation for Mapbox",
   "main": "build/dist/MapboxStyleParser.js",
   "types": "build/dist/MapboxStyleParser.d.ts",
