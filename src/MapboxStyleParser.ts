@@ -1279,7 +1279,8 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
     }
 
     if (fillSplitStyles.length === 2) {
-      return fillSplitStyles;
+      const hasOutlineOnly:boolean = (!fillSplitStyles[0].paint || !fillSplitStyles[0].paint['fill-color']);      
+      return hasOutlineOnly ? fillSplitStyles.slice(1,-1) : fillSplitStyles;
     }
 
     return [{
@@ -1306,7 +1307,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
       paint: fillPaint,
       layout: this.getLayoutFromFillSymbolizer(symbolizerClone as FillSymbolizer)
     };
-
+    
     symbolizerClone = structuredClone(symbolizer as FillSymbolizer);
     const lineSymbolizer: LineSymbolizer = {
       kind: 'Line',
