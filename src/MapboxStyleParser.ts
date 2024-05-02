@@ -1280,7 +1280,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
 
     if (fillSplitStyles.length === 2) {
       const hasOutlineOnly:boolean = (!fillSplitStyles[0].paint || !fillSplitStyles[0].paint['fill-color']);      
-      return hasOutlineOnly ? fillSplitStyles.slice(1,-1) : fillSplitStyles;
+      return hasOutlineOnly ? fillSplitStyles.slice(1) : fillSplitStyles;
     }
 
     return [{
