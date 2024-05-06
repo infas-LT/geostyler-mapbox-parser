@@ -303,29 +303,17 @@ export function toMapboxUnit(mbExpression: MbNumberExpression, d: DistanceUnit |
 
   if (!(Array.isArray(mbExpression) )) {
     k = <number>mbExpression;    
-    //return mbExpression as GeoStylerExpression<T> | undefined;
   }
-  else {
-    //if (mbExpression.length==1)
-    //  k = mbExpression[0];
-    //else
-      return mbExpression;
+  else {    
+    return mbExpression;
   }
 
-  let scaleDenom = 250000000.0; // Scale for Zoomlevel 1: 1:250 Mio.
+  let widthAtZoom1 = toCssPixel(k,279541132.014); // zoomlevel 1 is related to a scale 1:279.541.132
+  let widthAtZoom18 = toCssPixel(k,2132.72958385); // zoomlevel 18 is related to a scale 1:2.132
+  // zoom-to-scale looked up here: https://github.com/openstreetmap/mapnik-stylesheets/blob/master/zoom-to-scale.txt
+  // hope the shift of 1 between google zoomlevels and mapbox zoomlevels is respected here
   
-  let interpolation : MbNumberExpression = ["interpolate",["linear"],["zoom"]];
-  for(let z:number = 1; z<21; z++) {
-    // MetersOnEarth -> CSS-Pixel...
-    let widthAtZoom = toCssPixel(k,scaleDenom);
-    scaleDenom/=2.0;
-   
-    if (z%3==1)
-      {
-        interpolation.push(z);
-        interpolation.push(widthAtZoom);
-      }
-  }
-
+  let interpolation : MbNumberExpression = ["interpolate",["exponential", 2],["zoom"], 1, widthAtZoom1, 18, widthAtZoom18];
+  
   return interpolation;
 }
