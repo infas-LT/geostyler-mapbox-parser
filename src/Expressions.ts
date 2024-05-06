@@ -289,7 +289,9 @@ function toCssPixel(metersOnEarth: number, scaleDenominator: number) : number {
   if (metersOnEarth<0.0)
     return 0.0;
 
-  return Math.max(1.0, Math.round(metersOnEarth / scaleDenominator * cssPixPerMeter));    
+  // we shall not round here because we use the result in an exponential interpolation function
+  // which will be affected hardly if rounding here.
+  return Math.max(1.0, metersOnEarth / scaleDenominator * cssPixPerMeter);    
 }
 
 type MbNumberExpression = MapboxExpression | number | undefined;
