@@ -1730,7 +1730,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
     let strokeOpacity = symbolizer.strokeOpacity;
 
     // because MB-Styles didn't have a global opacity, we have to calculate this opacity into the special opacities.
-    if (symbolizer.opacity) {
+    if (symbolizer.opacity!==null && symbolizer.opacity!==1.0) {
       fillOpacity = this.multiplyExpression(fillOpacity, symbolizer.opacity);
       strokeOpacity = this.multiplyExpression(strokeOpacity, symbolizer.opacity);
     }
