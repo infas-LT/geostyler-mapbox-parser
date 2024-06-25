@@ -28,7 +28,8 @@ import {
   isFilter,
   isScaleDenominator,
   isGeoStylerBooleanFunction,
-  isGeoStylerStringFunction
+  isGeoStylerStringFunction,
+  GeoStylerNumberFunction
 } from 'geostyler-style';
 
 import MapboxStyleUtil from './Util/MapboxStyleUtil';
@@ -1425,6 +1426,7 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
     }
   }
 
+
   /**
    * Creates a Mapbox Layer Paint object from a GeoStylerStyle-LineSymbolizer
    *
@@ -1681,6 +1683,24 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
   }
 
   /**
+   * Creates a multiplied expression from 2 input expressions. Can be used to calculate a compines transparency
+   */
+  multiplyExpression(gsExpression1?: number | GeoStylerNumberFunction, gsExpression2?: number | GeoStylerNumberFunction): number | GeoStylerNumberFunction | undefined {
+    if (!gsExpression1)
+     return gsExpression2;
+   if (!gsExpression2)
+     return gsExpression1;
+   if (!isGeoStylerFunction(gsExpression1) && !isGeoStylerFunction(gsExpression2))
+     return Number(gsExpression1) * Number(gsExpression2);
+   let func: GeoStylerNumberFunction;
+   func = {
+     name: 'mul',
+     args: [gsExpression1,gsExpression2]
+   };
+   return func;
+  }
+
+  /**
    * Creates a Mapbox Layer Paint object from a GeoStylerStyle-MarkSymbolizer
    * that uses the wellKnownName 'circle'. This one will be handled explicitly
    * because mapbox has a dedicated layer type for circles. Other shapes are covered
@@ -1692,17 +1712,24 @@ export class MapboxStyleParser implements StyleParser<Omit<MbStyle, 'sources'>> 
   getCirclePaintFromMarkSymbolizer(symbolizer: MarkSymbolizer): CirclePaint {
     const {
       radius,
-      color,
-      fillOpacity,
+      color,      
       blur,
       offset,
       offsetAnchor,
       pitchScale,
       pitchAlignment,
       strokeWidth,
-      strokeColor,
-      strokeOpacity
+      strokeColor
     } = symbolizer;
+
+    let fillOpacity = symbolizer.fillOpacity;
+    let strokeOpacity = symbolizer.strokeOpacity;
+
+    // because MB-Styles didn't have a global opacity, we have to calculate this opacity into the special opacities.
+    if (symbolizer.opacity) {
+      fillOpacity = this.multiplyExpression(fillOpacity, symbolizer.opacity);
+      strokeOpacity = this.multiplyExpression(strokeOpacity, symbolizer.opacity);
+    }
 
     const paint: CirclePaint = {
       'circle-radius': gs2mbExpression<number>(radius),
